@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             xmlns:Syncfusion="clr-namespace:Syncfusion.SfDataGrid.XForms;assembly=Syncfusion.SfDataGrid.XForms"
+             x:Class="Databases_Viewer.Views.DatabasePage">
+    <!--             xmlns:local="clr-namespace:Databases_Viewer.ViewModels">
+    <ContentPage.BindingContext>
+        <local:DatabasePageViewModel/>
+    </ContentPage.BindingContext>-->
+    <ContentPage.Content>
+        <StackLayout HorizontalOptions="Center" 
+                     VerticalOptions="Center">
+            <Editor x:Name="InputEntry" Placeholder="Input Command" WidthRequest="200" HeightRequest="150" 
+                   Text="{Binding EntryString}" BackgroundColor="WhiteSmoke"/>
+            <Button x:Name="testButtton" Text="Submit" WidthRequest="150"
+                    BackgroundColor="#9dd8ed" HorizontalOptions="Center" />
+            <Syncfusion:SfDataGrid x:Name="DataGrid" AllowResizingColumn="True" AutoGenerateColumns="True" HorizontalOptions="StartAndExpand"
+                                     AllowTriStateSorting="True" ColumnSizer="Auto">
+            </Syncfusion:SfDataGrid>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>

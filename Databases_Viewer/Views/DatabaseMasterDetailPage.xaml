@@ -1,0 +1,50 @@
+﻿<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            mc:Ignorable="d"
+            x:Class="Databases_Viewer.Views.DatabaseMasterDetailPage"
+            xmlns:local="clr-namespace:Databases_Viewer.ViewModels">
+    <ContentPage.BindingContext>
+        <local:DatabaseMasterDetailPageViewModel/>
+    </ContentPage.BindingContext>
+    <ContentPage.Content>
+        <ScrollView HeightRequest="3000">
+            <StackLayout>
+                <SearchBar  x:Name="searchBar"
+                            VerticalOptions="Start"
+                            HorizontalOptions="Center"
+                            BackgroundColor="Aquamarine"
+                            SearchCommand="{Binding PerformSearch}"
+                            SearchCommandParameter="{Binding Text, Source={x:Reference searchBar}}"
+                            Text="{Binding Query}"
+                            />
+                <ListView x:Name="TableListView"
+                          HasUnevenRows="True"
+                          SeparatorVisibility="None"
+                          ItemsSource="{Binding DisplayedList}"  
+                          SelectedItem="{Binding SelectedTable}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                            <ViewCell>
+                                <Grid Padding="15,0,15,0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label x:Name="TextLabel" Grid.Row="0" Grid.Column="0" Text="{Binding name}" TranslationY="2" />
+                                    <Label x:Name="DetailLabel" Grid.Row="1" Grid.Column="0" Text="{Binding count, StringFormat='Number of Records = {0} rows'}" FontSize="Small" TextColor="Accent" TranslationY="-5"  />
+                                </Grid>
+                            </ViewCell>
+                        </DataTemplate>
+                </ListView.ItemTemplate>
+                </ListView>
+            </StackLayout>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>
