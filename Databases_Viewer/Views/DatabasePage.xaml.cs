@@ -27,6 +27,7 @@ namespace Databases_Viewer.Views
             {
                 currentTable = tableName;
                 InitializeComponent();
+                
             }
         }
 
