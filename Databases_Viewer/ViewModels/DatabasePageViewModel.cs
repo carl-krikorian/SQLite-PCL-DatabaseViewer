@@ -29,9 +29,6 @@ namespace Databases_Viewer.ViewModels
         {
             List<T> temporaryList = await Repo.GetAllAsync();
             DisplayList = new ObservableCollection<T>(temporaryList);
-            Debug.WriteLine("JAMCOOOOO");
-            foreach (T entity in temporaryList)
-                Debug.WriteLine(entity.ID);
             return DisplayList;
         }
     }

@@ -61,7 +61,22 @@ namespace Databases_Viewer.ViewModels
         }
         public ICommand PerformSearch => new Command<string>((string query) =>
         {
-             DisplayedList = new ObservableCollection<TableName>(App.Database.ListOfTables.Where(w => w.name == query).ToList());
+             DisplayedList = new ObservableCollection<TableName>(App.Database.ListOfTables.Where(w => w.name.Contains(query)).ToList());
         });
+
+        public ICommand TextChangeInSearchCommand => new Command(() => SearchInBlank());
+        private void SearchInBlank()
+        {
+
+            if (string.IsNullOrWhiteSpace(Query))
+            {
+                DisplayedList = new ObservableCollection<TableName>(App.Database.ListOfTables);
+            }
+            else 
+            {
+                DisplayedList = new ObservableCollection<TableName>(App.Database.ListOfTables.Where(w => w.name.Contains(Query)).ToList());
+            }
+
+        }
     }
 }

@@ -4,7 +4,8 @@
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
             mc:Ignorable="d"
             x:Class="Databases_Viewer.Views.DatabaseMasterDetailPage"
-            xmlns:local="clr-namespace:Databases_Viewer.ViewModels">
+            xmlns:local="clr-namespace:Databases_Viewer.ViewModels"
+            xmlns:behaviors="clr-namespace:Databases_Viewer.Behaviors">
     <ContentPage.BindingContext>
         <local:DatabaseMasterDetailPageViewModel/>
     </ContentPage.BindingContext>
@@ -17,8 +18,12 @@
                             BackgroundColor="Aquamarine"
                             SearchCommand="{Binding PerformSearch}"
                             SearchCommandParameter="{Binding Text, Source={x:Reference searchBar}}"
-                            Text="{Binding Query}"
-                            />
+                            Text="{Binding Query}">
+                    <SearchBar.Behaviors>
+                        <behaviors:EventToCommandBehavior EventName="TextChanged" Command="{Binding TextChangeInSearchCommand}"/>
+                    </SearchBar.Behaviors>
+                </SearchBar>
+                            
                 <ListView x:Name="TableListView"
                           HasUnevenRows="True"
                           SeparatorVisibility="None"
