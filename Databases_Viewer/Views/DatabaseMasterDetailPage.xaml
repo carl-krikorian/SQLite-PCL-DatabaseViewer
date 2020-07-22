@@ -6,9 +6,9 @@
             x:Class="Databases_Viewer.Views.DatabaseMasterDetailPage"
             xmlns:local="clr-namespace:Databases_Viewer.ViewModels"
             xmlns:behaviors="clr-namespace:Databases_Viewer.Behaviors">
-    <ContentPage.BindingContext>
+    <!--<ContentPage.BindingContext>
         <local:DatabaseMasterDetailPageViewModel/>
-    </ContentPage.BindingContext>
+    </ContentPage.BindingContext>-->
     <ContentPage.Content>
         <ScrollView HeightRequest="3000">
             <StackLayout>

@@ -9,7 +9,7 @@ namespace Databases_Viewer.Models
     public class TestItem : BaseEntity
     {
         public TestItem() { }
-        public TestItem(string field) { SomeField = field; }
-        public string SomeField;
+        public TestItem(int field) { SomeIntegerField = field; }
+        public int SomeIntegerField { get; set; }
     }
 }

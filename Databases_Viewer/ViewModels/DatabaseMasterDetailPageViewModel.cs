@@ -17,7 +17,7 @@ namespace Databases_Viewer.ViewModels
     {
         public event PropertyChangedEventHandler PropertyChanged;
         
-        private ObservableCollection<TableName> displayedList = new ObservableCollection<TableName>(App.Database.ListOfTables);
+        private ObservableCollection<TableName> displayedList = App.Database.ListOfTables;
         public ObservableCollection<TableName> DisplayedList
         {
             get
@@ -27,7 +27,7 @@ namespace Databases_Viewer.ViewModels
             set
             {
                 displayedList = value;
-                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(DisplayedList));
             }
         }
 
@@ -61,16 +61,15 @@ namespace Databases_Viewer.ViewModels
         }
         public ICommand PerformSearch => new Command<string>((string query) =>
         {
-             DisplayedList = new ObservableCollection<TableName>(App.Database.ListOfTables.Where(w => w.name.Contains(query)).ToList());
+             DisplayedList = new ObservableCollection<TableName>( App.Database.ListOfTables.Where(w => w.name.Contains(query)).ToList());
         });
-
         public ICommand TextChangeInSearchCommand => new Command(() => SearchInBlank());
         private void SearchInBlank()
         {
 
             if (string.IsNullOrWhiteSpace(Query))
             {
-                DisplayedList = new ObservableCollection<TableName>(App.Database.ListOfTables);
+                DisplayedList = App.Database.ListOfTables;
             }
             else 
             {

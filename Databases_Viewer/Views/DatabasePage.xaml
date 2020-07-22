@@ -6,19 +6,22 @@
              mc:Ignorable="d"
              xmlns:Syncfusion="clr-namespace:Syncfusion.SfDataGrid.XForms;assembly=Syncfusion.SfDataGrid.XForms"
              x:Class="Databases_Viewer.Views.DatabasePage"
-             xmlns:local ="clr-namespace:Databases_Viewer.Ressources">
+             xmlns:local ="clr-namespace:Databases_Viewer.Ressources"
+             xmlns:ViewModels ="clr-namespace:Databases_Viewer.ViewModels">
     <ContentPage.Resources>
         <ResourceDictionary>
             <local:GridTheme x:Key="CustomTheme" />
         </ResourceDictionary>
     </ContentPage.Resources>
+
+
     <ContentPage.Content>
         <StackLayout HorizontalOptions="Fill" 
                      VerticalOptions="Fill">
             <Editor x:Name="InputEntry" Placeholder="Input Command" WidthRequest="150" HeightRequest="100" 
                    Text="{Binding EntryString}" BackgroundColor="WhiteSmoke"/>
-            <Button x:Name="testButtton" Text="Submit" WidthRequest="150"
-                    BackgroundColor="#9dd8ed" HorizontalOptions="Center" />
+            <Button x:Name="submitButtton" Text="Submit" WidthRequest="150"
+                    BackgroundColor="#9dd8ed" HorizontalOptions="Center" Command="{Binding ExecuteInputCommand}" Clicked="submitButtton_Clicked"/>
             <Syncfusion:SfDataGrid x:Name="DataGrid" AllowResizingColumn="True" AutoGenerateColumns="True" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"
                                     AllowTriStateSorting="True" ColumnSizer="Auto" GridStyle="{StaticResource CustomTheme}">
             </Syncfusion:SfDataGrid>

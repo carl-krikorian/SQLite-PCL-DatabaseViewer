@@ -11,6 +11,7 @@ using Xamarin.Forms.Xaml;
 using Databases_Viewer.ViewModels;
 using System.Collections.ObjectModel;
 using Microsoft.CSharp.RuntimeBinder;
+using System.Windows.Input;
 
 namespace Databases_Viewer.Views
 {
@@ -27,12 +28,11 @@ namespace Databases_Viewer.Views
             {
                 currentTable = tableName;
                 InitializeComponent();
-                
+                Title = tableName.name;
             }
         }
 
         private TableName currentTable;
-
         protected override async void OnAppearing()
         {
             DataGrid.ItemsSource = await InvokeDatabasePageViewModelAsync(Activator.CreateInstance(Type.GetType("Databases_Viewer.Models." + currentTable.name)));
@@ -53,16 +53,26 @@ namespace Databases_Viewer.Views
                 return false;
             }
         }
-
         async Task<object> InvokeDatabasePageViewModelAsync(object o)
         {
-            Type genericType = typeof(DatabasePageViewModel<>).MakeGenericType(new Type[] { o.GetType() });
+            Type genericType = typeof(DatabasePageViewModel<>).MakeGenericType(new Type[] { o.GetType() }); 
             var genericInstance = Activator.CreateInstance(genericType);
+            BindingContext = genericInstance;
             var task = (Task)genericType.GetMethod("ReturnDisplayListAsync").Invoke(genericInstance, null);
             await task.ConfigureAwait(false);
             var resultProperty = task.GetType().GetProperty("Result");
+            //DataGrid.ItemsSource = genericInstance.GetType().GetProperty("DisplayedList").GetValue(genericInstance);
             return resultProperty.GetValue(task);
         }
+        protected override bool OnBackButtonPressed()
+        {
+            return true;
+        }
 
+        private async void submitButtton_Clicked(object sender, EventArgs e)
+        {
+            DataGrid.ItemsSource = null;
+            DataGrid.ItemsSource = await InvokeDatabasePageViewModelAsync(Activator.CreateInstance(Type.GetType("Databases_Viewer.Models." + currentTable.name)));
+        }
     }
 }

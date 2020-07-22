@@ -1,6 +1,10 @@
-﻿using System;
+﻿using Databases_Viewer.ViewModels;
+using Syncfusion.Data.Extensions;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,17 +16,17 @@ namespace Databases_Viewer.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class DatabaseMasterDetailPage : ContentPage
     {
+        DatabaseMasterDetailPageViewModel databaseMasterDetailPageViewModel;
         public DatabaseMasterDetailPage()
         {
             InitializeComponent();
+            databaseMasterDetailPageViewModel = new DatabaseMasterDetailPageViewModel();
+            BindingContext = databaseMasterDetailPageViewModel;
         }
-
-        /*private void searchBar_TextChanged(object sender, TextChangedEventArgs e)
+        protected override void OnAppearing()
         {
-            if(string.IsNullOrWhiteSpace(searchBar.Text))
-            {
-                
-            }
-        }*/
+            TableListView.ItemsSource = null;
+            TableListView.ItemsSource = App.Database.ListOfTables;
+        }
     }
 }

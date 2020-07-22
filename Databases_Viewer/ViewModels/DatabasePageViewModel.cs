@@ -9,6 +9,8 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using Xamarin.Forms;
 
 namespace Databases_Viewer.ViewModels
 {
@@ -23,13 +25,35 @@ namespace Databases_Viewer.ViewModels
         public DatabasePageViewModel()
         {
             Repo = new SQLiteRepository<T>(App.Database.uow);
+            ExecuteInputCommand = new Command(DBExecuteInput);
         }
-        public ObservableCollection<T> DisplayList ;
+        private ObservableCollection<T> displayList;
+        public ObservableCollection<T> DisplayList
+        {
+            get
+            {
+                return displayList;
+            }
+            set
+            {
+                displayList = value;
+                NotifyPropertyChanged(nameof(DisplayList));
+            }
+        }
         public async Task<ObservableCollection<T>> ReturnDisplayListAsync()
         {
             List<T> temporaryList = await Repo.GetAllAsync();
             DisplayList = new ObservableCollection<T>(temporaryList);
             return DisplayList;
+        }
+        public string EntryString { get; set; }
+        public ICommand ExecuteInputCommand { get; } 
+        public async void DBExecuteInput()
+        {
+            Debug.WriteLine("start of command");
+            App.Database.QueryDatabase(new Item(), EntryString); //"insert into Item(ID, Text) VALUES ('createdID3','TestText3')"
+            await this.ReturnDisplayListAsync();
+            Debug.WriteLine("end of command");
         }
     }
 }
