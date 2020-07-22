@@ -20,13 +20,14 @@ namespace Databases_Viewer.Views
         public DatabaseMasterDetailPage()
         {
             InitializeComponent();
-            databaseMasterDetailPageViewModel = new DatabaseMasterDetailPageViewModel();
-            BindingContext = databaseMasterDetailPageViewModel;
+            /*databaseMasterDetailPageViewModel = new DatabaseMasterDetailPageViewModel();
+            BindingContext = databaseMasterDetailPageViewModel;*/
         }
         protected override void OnAppearing()
         {
-            TableListView.ItemsSource = null;
-            TableListView.ItemsSource = App.Database.ListOfTables;
+            //TableListView.ItemsSource = null;
+            //databaseMasterDetailPageViewModel.DisplayedList = App.Database.ListOfTables;
+            //TableListView.ItemsSource = App.Database.ListOfTables;
         }
     }
 }
