@@ -20,17 +20,13 @@ namespace Databases_Viewer.ViewModels
         private ObservableCollection<TableName> displayedList = App.Database.ListOfTables;
         public ObservableCollection<TableName> DisplayedList
         {
-            get
-            {
-                return displayedList;
-            }
+            get => displayedList;
             set
             {
                 displayedList = value;
                 NotifyPropertyChanged(nameof(DisplayedList));
             }
         }
-
         protected virtual void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

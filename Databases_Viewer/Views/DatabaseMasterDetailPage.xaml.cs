@@ -16,7 +16,7 @@ namespace Databases_Viewer.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class DatabaseMasterDetailPage : ContentPage
     {
-        DatabaseMasterDetailPageViewModel databaseMasterDetailPageViewModel;
+        //DatabaseMasterDetailPageViewModel databaseMasterDetailPageViewModel;
         public DatabaseMasterDetailPage()
         {
             InitializeComponent();

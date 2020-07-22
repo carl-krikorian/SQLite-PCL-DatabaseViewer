@@ -69,10 +69,11 @@ namespace Databases_Viewer.Views
             return true;
         }
 
-        private async void submitButtton_Clicked(object sender, EventArgs e)
+        private void submitButtton_Clicked(object sender, EventArgs e)
         {
             DataGrid.ItemsSource = null;
-            DataGrid.ItemsSource = await InvokeDatabasePageViewModelAsync(Activator.CreateInstance(Type.GetType("Databases_Viewer.Models." + currentTable.name)));
+            //DataGrid.ItemsSource = await InvokeDatabasePageViewModelAsync(Activator.CreateInstance(Type.GetType("Databases_Viewer.Models." + currentTable.name)));
+            DataGrid.ItemsSource = App.Database.lastObservedList;
         }
     }
 }

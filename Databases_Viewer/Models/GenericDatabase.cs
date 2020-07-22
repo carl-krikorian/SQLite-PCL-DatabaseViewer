@@ -1,25 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Databases_Viewer.Models.Repository;
 using GalaSoft.MvvmLight;
 using SQLite;
 using Syncfusion.Data.Extensions;
+using Xamarin.Forms;
 
 namespace Databases_Viewer.Models
 {
-    public class GenericDatabase
+    public class GenericDatabase: INotifyPropertyChanged
     {
         public SQLiteAsyncConnection _database;
         public string DBPath;
         public UnitOfWork uow;
-        public ObservableCollection<TableName> ListOfTables;
+        public ObservableCollection<Object> lastObservedList;
+        private string lastSelectQuery;
+        private ObservableCollection<TableName> listOfTables ;
+        public ObservableCollection<TableName> ListOfTables
+        {
+            get
+            {
+                return listOfTables;
+            }
+            set
+            {
+                listOfTables = value;
+                NotifyPropertyChanged(nameof(ListOfTables));
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
         public GenericDatabase(string dbPath)
         {
             DBPath = dbPath;
@@ -61,7 +86,7 @@ namespace Databases_Viewer.Models
         {
             using (SQLiteConnection _conn = new SQLiteConnection(DBPath))
             {
-                Debug.WriteLine("Updating table " + tableName);
+                //Debug.WriteLine("Updating table " + tableName);
                 for(int i=0; i < ListOfTables.Count; i++)
                 {
                     if ( ListOfTables[i].name == tableName)
@@ -87,12 +112,8 @@ namespace Databases_Viewer.Models
             r.Wait();
             return r.Result;
         }
-        public bool QueryDatabase(object o, string query)
+        public bool QueryDatabase(string query)
         {
-            /*using (SQLiteConnection conn = new SQLiteConnection(DBPath))
-            {
-                conn.Execute(query);
-            }*/
             if (string.IsNullOrWhiteSpace(query))
                 return false;
             try
@@ -104,7 +125,7 @@ namespace Databases_Viewer.Models
                 //parses the input String to see which operation is being used as well as 
                 if (firstWord.ToLower() == "select")
                 {
-                    //typeof(SQLiteConnection).GetMethods().Where(x => x.Name == "Query").FirstOrDefault(x => x.IsGenericMethod).MakeGenericMethod(o.GetType()).Invoke(conn,new object[] { query });
+                    return WhenQuerySelect(query,split);
                 }
                 else if (firstWord.ToLower() == "update")
                 {
@@ -113,7 +134,10 @@ namespace Databases_Viewer.Models
                     {
                         modifiedRows = conn.Execute(query);
                     }
+                    QueryDatabase(lastSelectQuery);
                     App.Current.MainPage.DisplayAlert("Update Successful", "Number of rows affected = " + modifiedRows, "OK");
+                    Debug.WriteLine("Update TableName is " + split[1]);
+                    PopulateFromLastQuery(split[1]);
                     return true;
                 }
                 else if (firstWord.ToLower() == "insert")
@@ -131,6 +155,7 @@ namespace Databases_Viewer.Models
                     }
                     UpdateSpecificTableCount(tableString);
                     printTableListInfo();
+                    PopulateFromLastQuery(tableString);
                     App.Current.MainPage.DisplayAlert("Insert Successful", "Number of rows affected = " + modifiedRows, "OK");
                     return true;
                 }
@@ -148,7 +173,8 @@ namespace Databases_Viewer.Models
                         modifiedRows = conn.Execute(query);
                     }
                     UpdateSpecificTableCount(tableName);
-                    printTableListInfo();
+                    //printTableListInfo();
+                    PopulateFromLastQuery(tableName);
                     App.Current.MainPage.DisplayAlert("Delete Successful", "Number of rows affected = " + modifiedRows, "OK");
                     return true;
                 }
@@ -161,6 +187,24 @@ namespace Databases_Viewer.Models
                 return false;
             }
         }
+        public bool WhenQuerySelect(string query, string [] splitQuery)
+        {
+            lastSelectQuery = query;
+            int TableIndex;
+            for (TableIndex = 0; TableIndex < splitQuery.Length; TableIndex++)
+                if (splitQuery[TableIndex] == "from")
+                    break;
+            string tableName = splitQuery[TableIndex + 1];
+            //Debug.WriteLine("tableName is " + tableName);
+            Type TableType = Type.GetType("Databases_Viewer.Models." + tableName);
+            //Debug.WriteLine("we found the type! " + TableType.FullName);
+            using (SQLiteConnection conn = new SQLiteConnection(DBPath))
+            {
+                var map = conn.GetMapping(TableType);
+                lastObservedList = new ObservableCollection<Object>(conn.Query(map, query));
+                return true;
+            }
+        }
         private string CleanQuery(string query)
         {
             string treatedQuery = Regex.Replace(query, @"[^a-zA-Z]", " ");
@@ -170,6 +214,15 @@ namespace Databases_Viewer.Models
                 : " ");  // Else, replace the 1+ whitespaces matched with a space
             treatedQuery = Regex.Replace(treatedQuery, @"\n{3,}", "\n\n"); // Replace 3+ \ns with two \ns
             return treatedQuery;
+        }
+        private bool PopulateFromLastQuery(string tableName)
+        {
+            if (string.IsNullOrWhiteSpace(this.lastSelectQuery))
+            {
+                return QueryDatabase("select * from " + tableName);
+            }
+            else
+                return QueryDatabase(lastSelectQuery);
         }
     }
 }
