@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Windows.Input;
 using Xamarin.Forms;
@@ -16,7 +17,7 @@ namespace Databases_Viewer.ViewModels
     class DatabaseMasterDetailPageViewModel: INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        
+        private ObservableCollection<TableName> TablesList = App.Database.ListOfTables;
         private ObservableCollection<TableName> displayedList = App.Database.ListOfTables;
         public ObservableCollection<TableName> DisplayedList
         {
@@ -25,6 +26,17 @@ namespace Databases_Viewer.ViewModels
             {
                 displayedList = value;
                 NotifyPropertyChanged(nameof(DisplayedList));
+            }
+        }
+        private bool isbusy = false;
+        public bool isBusy 
+        {
+            get { return isbusy; }
+            set
+            {
+                if (isbusy != value)
+                    isbusy = value;
+                NotifyPropertyChanged(nameof(isBusy));
             }
         }
         protected virtual void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
@@ -43,8 +55,8 @@ namespace Databases_Viewer.ViewModels
                 {
                     _selectedTable = value;
                     //NotifyPropertyChanged(nameof(SelectedTable));
-                    TableListView_ItemSelected(_selectedTable);
-
+                    if (_selectedTable != null)
+                        TableListView_ItemSelected(SelectedTable);
                 }
             }
         }
@@ -54,24 +66,32 @@ namespace Databases_Viewer.ViewModels
            // t.name = "jeff";
             //Debug.WriteLine("Table name is " + tableName.name);
             await App.Current.MainPage.Navigation.PushAsync(new DatabasePage(tableName));
+            _selectedTable = null;
+            SelectedTable = null;
         }
         public ICommand PerformSearch => new Command<string>((string query) =>
         {
-             DisplayedList = new ObservableCollection<TableName>( App.Database.ListOfTables.Where(w => w.name.Contains(query)).ToList());
+             DisplayedList = new ObservableCollection<TableName>( DisplayedList.Where(w => w.name.ToLower().Contains(Query.ToLower())).ToList());
         });
+        public ICommand RefreshCommand => new Command(() => RefreshDisplayList());
         public ICommand TextChangeInSearchCommand => new Command(() => SearchInBlank());
         private void SearchInBlank()
         {
 
             if (string.IsNullOrWhiteSpace(Query))
             {
-                DisplayedList = App.Database.ListOfTables;
+                DisplayedList = TablesList;
             }
-            else 
+            else
             {
-                DisplayedList = new ObservableCollection<TableName>(App.Database.ListOfTables.Where(w => w.name.Contains(Query)).ToList());
+                DisplayedList = new ObservableCollection<TableName>(DisplayedList.Where(w => w.name.ToLower().Contains(Query.ToLower())).ToList());
             }
-
+        }
+        private void RefreshDisplayList()
+        {
+            isBusy = true;
+            DisplayedList = new ObservableCollection<TableName>(App.Database.ListOfTables);
+            isBusy = false;
         }
     }
 }

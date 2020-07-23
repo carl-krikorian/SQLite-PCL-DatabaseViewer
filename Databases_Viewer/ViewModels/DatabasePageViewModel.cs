@@ -50,10 +50,10 @@ namespace Databases_Viewer.ViewModels
         public ICommand ExecuteInputCommand { get; } 
         public async void DBExecuteInput()
         {
-            Debug.WriteLine("start of command");
+            //Debug.WriteLine("start of command");
             App.Database.QueryDatabase(EntryString); //"insert into Item(ID, Text) VALUES ('createdID3','TestText3')"
             await this.ReturnDisplayListAsync();
-            Debug.WriteLine("end of command");
+            //Debug.WriteLine("end of command");
         }
     }
 }

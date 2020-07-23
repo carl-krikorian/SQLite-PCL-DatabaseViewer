@@ -38,7 +38,7 @@ namespace Databases_Viewer.Models
                 NotifyPropertyChanged(nameof(ListOfTables));
             }
         }
-
+        //PropertyChanged += (object sender, PropertyChangedEventArgs e) => { // logic goes here }
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
@@ -189,7 +189,6 @@ namespace Databases_Viewer.Models
         }
         public bool WhenQuerySelect(string query, string [] splitQuery)
         {
-            lastSelectQuery = query;
             int TableIndex;
             for (TableIndex = 0; TableIndex < splitQuery.Length; TableIndex++)
                 if (splitQuery[TableIndex] == "from")
@@ -202,6 +201,7 @@ namespace Databases_Viewer.Models
             {
                 var map = conn.GetMapping(TableType);
                 lastObservedList = new ObservableCollection<Object>(conn.Query(map, query));
+                lastSelectQuery = query;
                 return true;
             }
         }
