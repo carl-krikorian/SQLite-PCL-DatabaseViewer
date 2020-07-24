@@ -11,6 +11,7 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Databases_Viewer.Models.Repository;
+using Databases_Viewer.Models.Repository.Interfaces;
 using GalaSoft.MvvmLight;
 using SQLite;
 using Syncfusion.Data.Extensions;
@@ -21,7 +22,7 @@ namespace Databases_Viewer.Models
     public class GenericDatabase: INotifyPropertyChanged
     {
         public SQLiteAsyncConnection _database;
-        public string DBPath;
+        public static string DBPath;
         public UnitOfWork uow;
         public ObservableCollection<Object> lastObservedList;
         private string lastSelectQuery;
@@ -38,26 +39,53 @@ namespace Databases_Viewer.Models
                 NotifyPropertyChanged(nameof(ListOfTables));
             }
         }
-        //PropertyChanged += (object sender, PropertyChangedEventArgs e) => { // logic goes here }
+
+        public static object ExceptionHandlers { get; private set; }
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        public static bool CreateAllDBTables()
+        {
+            try
+            {
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
+                Debug.WriteLine("DB Table started: " + stopwatch.Elapsed.ToString());
 
+                using (SQLiteConnection conn = new SQLiteConnection(DBPath))
+                {
+                    var type = typeof(BaseEntity);
+                    var types = AppDomain.CurrentDomain.GetAssemblies()
+                        .SelectMany(s => s.GetTypes())
+                        .Where(p => type.IsAssignableFrom(p));
+                    var entites = types.Where(t => t.FullName.Contains(".Entities")).ToList();
+                    var tasks = new List<Task>();
+                    foreach (var entityType in entites)
+                    {
+                        if (!conn.TableMappings.Any(x => x.MappedType == entityType))
+                        {
+                            conn.CreateTable(entityType, CreateFlags.None);
+                        }
+                    }
+                    Debug.WriteLine("DB Table Creation: " + stopwatch.Elapsed.ToString());
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.StackTrace);
+                return false;
+            }
+        }
         public GenericDatabase(string dbPath)
         {
             DBPath = dbPath;
             _database = new SQLiteAsyncConnection(dbPath);
-            uow = new UnitOfWork(dbPath);
-            _database.CreateTableAsync<Animal>();
-            //_database.DropTableAsync<Animal>();
-            //_database.InsertAsync(new Animal("test", "test Link", "Test Description")).Wait();
-            _database.CreateTableAsync<Item>().Wait();
-            _database.CreateTableAsync<TestItem>().Wait();
+            CreateAllDBTables();
             ListOfTables = PopulateTableListWithRowCount();
-            //_database.InsertAsync(new Item(1,"i1"));
-            //_database.InsertAsync(new Item(2,"i2"));*/
         }
         public ObservableCollection<TableName> ListOfTablesGetter()
         {
@@ -71,13 +99,12 @@ namespace Databases_Viewer.Models
         public ObservableCollection<TableName> PopulateTableListWithRowCount()
         {
             List<TableName> temporaryList = this.GetAllTablesAsync().Result;
-            temporaryList.RemoveAll(r => r.name == "sqlite_sequence");
+            temporaryList.RemoveAll(r => r.Name == "sqlite_sequence");
             using (SQLiteConnection _conn = new SQLiteConnection(DBPath))
             {
                 foreach (TableName tableName in temporaryList)
                 {
-                    tableName.count = _conn.ExecuteScalar<int>("SELECT COUNT(*) FROM " + tableName.name);
-                    //tableName.count = await (_database.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM "+ tableName.name));
+                    tableName.Count = _conn.ExecuteScalar<int>("SELECT COUNT(*) FROM " + tableName.Name);
                 }
             }
             return new ObservableCollection<TableName>(temporaryList);
@@ -86,12 +113,11 @@ namespace Databases_Viewer.Models
         {
             using (SQLiteConnection _conn = new SQLiteConnection(DBPath))
             {
-                //Debug.WriteLine("Updating table " + tableName);
                 for(int i=0; i < ListOfTables.Count; i++)
                 {
-                    if ( ListOfTables[i].name == tableName)
+                    if ( ListOfTables[i].Name == tableName)
                     {
-                        ListOfTables[i].count = _conn.ExecuteScalar<int>("SELECT COUNT(*) FROM " + tableName);
+                        ListOfTables[i].Count = _conn.ExecuteScalar<int>("SELECT COUNT(*) FROM " + tableName);
                         return true;
                     }
                 }
@@ -103,7 +129,7 @@ namespace Databases_Viewer.Models
             Debug.WriteLine("Printing Table counts!!");
             foreach (TableName t in ListOfTables)
             {
-                Debug.WriteLine(t.count);
+                Debug.WriteLine(t.Count);
             }
         }
         public List<Item> GetItemList()
@@ -112,6 +138,7 @@ namespace Databases_Viewer.Models
             r.Wait();
             return r.Result;
         }
+        //parses the input String to see which operation and calls the appropriate method
         public bool QueryDatabase(string query)
         {
             if (string.IsNullOrWhiteSpace(query))
@@ -120,63 +147,22 @@ namespace Databases_Viewer.Models
             {
                 var firstWord = Regex.Replace(query.Split()[0], @"[^0-9a-zA-Z\ ]+", "");
                 string treatedQuery = CleanQuery(query);
-                Debug.WriteLine("treated Query is " + treatedQuery);
                 string[] split = treatedQuery.Split(' ');
-                //parses the input String to see which operation is being used as well as 
                 if (firstWord.ToLower() == "select")
                 {
                     return WhenQuerySelect(query,split);
                 }
                 else if (firstWord.ToLower() == "update")
                 {
-                    int modifiedRows;
-                    using (SQLiteConnection conn = new SQLiteConnection(DBPath))
-                    {
-                        modifiedRows = conn.Execute(query);
-                    }
-                    QueryDatabase(lastSelectQuery);
-                    App.Current.MainPage.DisplayAlert("Update Successful", "Number of rows affected = " + modifiedRows, "OK");
-                    Debug.WriteLine("Update TableName is " + split[1]);
-                    PopulateFromLastQuery(split[1]);
-                    return true;
+                    return WhenQueryUpdate(query, split);
                 }
                 else if (firstWord.ToLower() == "insert")
                 {
-                    int TableIndex;
-                    for (TableIndex = 0; TableIndex < split.Length; TableIndex++)
-                        if (split[TableIndex] == "into")
-                            break;
-                    string tableString = split[TableIndex + 1];
-                    Debug.WriteLine("the table being changed is " + tableString);
-                    int modifiedRows;
-                    using (SQLiteConnection conn = new SQLiteConnection(DBPath))
-                    {
-                        modifiedRows = conn.Execute(query);
-                    }
-                    UpdateSpecificTableCount(tableString);
-                    printTableListInfo();
-                    PopulateFromLastQuery(tableString);
-                    App.Current.MainPage.DisplayAlert("Insert Successful", "Number of rows affected = " + modifiedRows, "OK");
-                    return true;
+                    return WhenQueryInsert(query, split);
                 }
                 else if (firstWord.ToLower() == "delete")
                 {
-                    int TableIndex;
-                    for (TableIndex = 0; TableIndex < split.Length; TableIndex++)
-                        if (split[TableIndex] == "from")
-                            break;
-                    string tableName = split[TableIndex + 1];
-                    Debug.WriteLine("the table being changed is " + tableName);
-                    int modifiedRows;
-                    using (SQLiteConnection conn = new SQLiteConnection(DBPath))
-                    {
-                        modifiedRows = conn.Execute(query);
-                    }
-                    UpdateSpecificTableCount(tableName);
-                    //printTableListInfo();
-                    PopulateFromLastQuery(tableName);
-                    App.Current.MainPage.DisplayAlert("Delete Successful", "Number of rows affected = " + modifiedRows, "OK");
-                    return true;
+                    WhenQueryDelete(query, split);
                 }
 
                     return false;
@@ -194,9 +180,7 @@ namespace Databases_Viewer.Models
                 if (splitQuery[TableIndex] == "from")
                     break;
             string tableName = splitQuery[TableIndex + 1];
-            //Debug.WriteLine("tableName is " + tableName);
             Type TableType = Type.GetType("Databases_Viewer.Models." + tableName);
-            //Debug.WriteLine("we found the type! " + TableType.FullName);
             using (SQLiteConnection conn = new SQLiteConnection(DBPath))
             {
                 var map = conn.GetMapping(TableType);
@@ -204,6 +188,55 @@ namespace Databases_Viewer.Models
                 lastSelectQuery = query;
                 return true;
             }
+        }
+        public bool WhenQueryUpdate(string query, string[] splitQuery)
+        {
+            int modifiedRows;
+            using (SQLiteConnection conn = new SQLiteConnection(DBPath))
+            {
+                modifiedRows = conn.Execute(query);
+            }
+            QueryDatabase(lastSelectQuery);
+            App.Current.MainPage.DisplayAlert("Update Successful", "Number of rows affected = " + modifiedRows, "OK");
+            Debug.WriteLine("Update TableName is " + splitQuery[1]);
+            PopulateFromLastQuery(splitQuery[1]);
+            return true;
+        }
+        public bool WhenQueryInsert(string query, string[] splitQuery)
+        {
+            int TableIndex;
+            for (TableIndex = 0; TableIndex < splitQuery.Length; TableIndex++)
+                if (splitQuery[TableIndex] == "into")
+                    break;
+            string tableString = splitQuery[TableIndex + 1];
+            Debug.WriteLine("the table being changed is " + tableString);
+            int modifiedRows;
+            using (SQLiteConnection conn = new SQLiteConnection(DBPath))
+            {
+                modifiedRows = conn.Execute(query);
+            }
+            UpdateSpecificTableCount(tableString);
+            PopulateFromLastQuery(tableString);
+            App.Current.MainPage.DisplayAlert("Insert Successful", "Number of rows affected = " + modifiedRows, "OK");
+            return true;
+        }
+        public bool WhenQueryDelete(string query, string[] splitQuery)
+        {
+            int TableIndex;
+            for (TableIndex = 0; TableIndex < splitQuery.Length; TableIndex++)
+                if (splitQuery[TableIndex] == "from")
+                    break;
+            string tableName = splitQuery[TableIndex + 1];
+            Debug.WriteLine("the table being changed is " + tableName);
+            int modifiedRows;
+            using (SQLiteConnection conn = new SQLiteConnection(DBPath))
+            {
+                modifiedRows = conn.Execute(query);
+            }
+            UpdateSpecificTableCount(tableName);
+            PopulateFromLastQuery(tableName);
+            App.Current.MainPage.DisplayAlert("Delete Successful", "Number of rows affected = " + modifiedRows, "OK");
+            return true;
         }
         private string CleanQuery(string query)
         {
@@ -230,7 +263,7 @@ namespace Databases_Viewer.Models
 public class TableName : ObservableObject
 {
     public TableName() { }
-    public TableName(string Name) { name = Name; }
-    public string name { get; set; }
-    public int count { get; set; }
+    public TableName(string name) { Name = name; }
+    public string Name { get; set; }
+    public int Count { get; set; }
 }

@@ -15,5 +15,10 @@ namespace Databases_Viewer.Models
         {
             return new UnitOfWork(dbPath);
         }
+
+        public void Dispose()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

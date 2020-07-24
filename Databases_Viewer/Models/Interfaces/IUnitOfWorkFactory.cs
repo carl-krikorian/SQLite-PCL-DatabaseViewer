@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Databases_Viewer.Models.Repository.Interfaces
 {
-    public interface IUnitOfWorkFactory
+    public interface IUnitOfWorkFactory: IDisposable
     {
         IUnitOfWork Create();
     }

@@ -22,20 +22,15 @@ namespace Databases_Viewer.Views
         { InitializeComponent(); }
         public DatabasePage(TableName tableName)
         {
-            if (!FindClass(tableName.name) || !App.Database.ListOfTables.Contains(tableName))
+            if (!FindClass(tableName.Name) || !App.Database.ListOfTables.Contains(tableName))
                 App.Current.MainPage.DisplayAlert("Database mismatch", "Lack of correspondance between database and classes", "Ok");
             else
             {
-                currentTable = tableName;
                 InitializeComponent();
-                Title = tableName.name;
+                Title = tableName.Name;
+                DatabasePageViewModel databasePageViewModel = new DatabasePageViewModel(tableName);
+                BindingContext = databasePageViewModel;
             }
-        }
-
-        private TableName currentTable;
-        protected override async void OnAppearing()
-        {
-            DataGrid.ItemsSource = await InvokeDatabasePageViewModelAsync(Activator.CreateInstance(Type.GetType("Databases_Viewer.Models." + currentTable.name)));
         }
         public bool FindClass(string ClassName)
         {
@@ -52,28 +47,6 @@ namespace Databases_Viewer.Views
                 Debug.WriteLine(e.ToString());
                 return false;
             }
-        }
-        async Task<object> InvokeDatabasePageViewModelAsync(object o)
-        {
-            Type genericType = typeof(DatabasePageViewModel<>).MakeGenericType(new Type[] { o.GetType() }); 
-            var genericInstance = Activator.CreateInstance(genericType);
-            BindingContext = genericInstance;
-            var task = (Task)genericType.GetMethod("ReturnDisplayListAsync").Invoke(genericInstance, null);
-            await task.ConfigureAwait(false);
-            var resultProperty = task.GetType().GetProperty("Result");
-            //DataGrid.ItemsSource = genericInstance.GetType().GetProperty("DisplayedList").GetValue(genericInstance);
-            return resultProperty.GetValue(task);
-        }
-        protected override bool OnBackButtonPressed()
-        {
-            return true;
-        }
-
-        private void submitButtton_Clicked(object sender, EventArgs e)
-        {
-            DataGrid.ItemsSource = null;
-            //DataGrid.ItemsSource = await InvokeDatabasePageViewModelAsync(Activator.CreateInstance(Type.GetType("Databases_Viewer.Models." + currentTable.name)));
-            DataGrid.ItemsSource = App.Database.lastObservedList;
         }
     }
 }

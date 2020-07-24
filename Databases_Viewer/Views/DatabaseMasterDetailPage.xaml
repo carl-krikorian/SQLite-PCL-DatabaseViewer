@@ -23,7 +23,6 @@
                         <behaviors:EventToCommandBehavior EventName="TextChanged" Command="{Binding TextChangeInSearchCommand}"/>
                     </SearchBar.Behaviors>
                 </SearchBar>
-                            
                 <ListView x:Name="TableListView"
                           HasUnevenRows="True"
                           SeparatorVisibility="None"
@@ -41,13 +40,12 @@
                                         <RowDefinition Height="*" />
                                         <RowDefinition Height="*" />
                                     </Grid.RowDefinitions>
-
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <Label x:Name="TextLabel" Grid.Row="0" Grid.Column="0" Text="{Binding name}" TranslationY="2" />
-                                    <Label x:Name="DetailLabel" Grid.Row="1" Grid.Column="0" Text="{Binding count, StringFormat='Number of Records = {0} rows'}" FontSize="Small"  TextColor="Black" TranslationY="-5"  />
+                                    <Label x:Name="TextLabel" Grid.Row="0" Grid.Column="0" Text="{Binding Name}" TranslationY="2" TextColor="#2196f3" />
+                                    <Label x:Name="DetailLabel" Grid.Row="1" Grid.Column="0" Text="{Binding Count, StringFormat='Number of Records = {0} rows'}" FontSize="Small"  TextColor="Black" TranslationY="-5"  />
                                 </Grid>
                             </ViewCell>
                         </DataTemplate>

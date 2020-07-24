@@ -71,7 +71,7 @@ namespace Databases_Viewer.ViewModels
         }
         public ICommand PerformSearch => new Command<string>((string query) =>
         {
-             DisplayedList = new ObservableCollection<TableName>( DisplayedList.Where(w => w.name.ToLower().Contains(Query.ToLower())).ToList());
+             DisplayedList = new ObservableCollection<TableName>( DisplayedList.Where(w => w.Name.ToLower().Contains(Query.ToLower())).ToList());
         });
         public ICommand RefreshCommand => new Command(() => RefreshDisplayList());
         public ICommand TextChangeInSearchCommand => new Command(() => SearchInBlank());
@@ -84,7 +84,7 @@ namespace Databases_Viewer.ViewModels
             }
             else
             {
-                DisplayedList = new ObservableCollection<TableName>(DisplayedList.Where(w => w.name.ToLower().Contains(Query.ToLower())).ToList());
+                DisplayedList = new ObservableCollection<TableName>(DisplayedList.Where(w => w.Name.ToLower().Contains(Query.ToLower())).ToList());
             }
         }
         private void RefreshDisplayList()

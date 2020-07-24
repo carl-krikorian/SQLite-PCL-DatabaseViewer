@@ -5,7 +5,7 @@ using Xamarin.Forms;
 
 namespace Databases_Viewer.ViewModels
 {
-    public class AboutViewModel : BaseViewModel
+    public class AboutViewModel 
     {
     }
 }
