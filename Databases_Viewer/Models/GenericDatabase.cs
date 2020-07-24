@@ -21,11 +21,25 @@ namespace Databases_Viewer.Models
 {
     public class GenericDatabase: INotifyPropertyChanged
     {
+        /// <summary>
+        /// Constructor that uses the dbPath to create a connection to that database and then creates all tables if not already exists using create All Table
+        /// Finally it populates all of these tables using PopulateTableListWithRowCount
+        /// </summary>
+        /// <param name="dbPath">a string that disctates path to the Database</param>
+        public GenericDatabase(string dbPath)
+        {
+            DBPath = dbPath;
+            _database = new SQLiteAsyncConnection(dbPath);
+            CreateAllDBTables();
+            ListOfTables = PopulateTableListWithRowCount();
+        }
         public SQLiteAsyncConnection _database;
         public static string DBPath;
-        public UnitOfWork uow;
-        public ObservableCollection<Object> lastObservedList;
+        //last Query is used to display the previous select query in case of an update/delete or insert to see all updates
         private string lastSelectQuery;
+        //The last list of objects returned from the select Query
+        public ObservableCollection<Object> lastObservedList;
+        //The property for the List of TablName objects
         private ObservableCollection<TableName> listOfTables ;
         public ObservableCollection<TableName> ListOfTables
         {
@@ -39,14 +53,15 @@ namespace Databases_Viewer.Models
                 NotifyPropertyChanged(nameof(ListOfTables));
             }
         }
-
-        public static object ExceptionHandlers { get; private set; }
-
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        /// <summary>
+        /// creates tables in the SQLite database that correspond to the items with Enitity Base in the project 
+        /// </summary>
+        /// <returns>Returns true if successful false if an exception is thrown </returns>
         public static bool CreateAllDBTables()
         {
             try
@@ -80,22 +95,20 @@ namespace Databases_Viewer.Models
                 return false;
             }
         }
-        public GenericDatabase(string dbPath)
-        {
-            DBPath = dbPath;
-            _database = new SQLiteAsyncConnection(dbPath);
-            CreateAllDBTables();
-            ListOfTables = PopulateTableListWithRowCount();
-        }
-        public ObservableCollection<TableName> ListOfTablesGetter()
-        {
-            return ListOfTables;
-        }
+        //Constructor that creates all Tables and then populates the List of tableName objects with their names and counts
+        /// <summary>
+        /// By querying the table SQLITE MASTER we can get all table names.
+        /// </summary>
+        /// <returns>A list of TableName objects with only the Name property assigned</returns>
         public async Task<List<TableName>> GetAllTablesAsync()
         {
             string queryString = $"SELECT name FROM sqlite_master WHERE type = 'table'";
             return await _database.QueryAsync<TableName>(queryString).ConfigureAwait(false);
         }
+        /// <summary>
+        /// Uses GetAllTablesAsync() and assigns to each table a count using an SQL Query 
+        /// </summary>
+        /// <returns>A List of TableNames is returned and used in the other content pages </returns>
         public ObservableCollection<TableName> PopulateTableListWithRowCount()
         {
             List<TableName> temporaryList = this.GetAllTablesAsync().Result;
@@ -109,18 +122,31 @@ namespace Databases_Viewer.Models
             }
             return new ObservableCollection<TableName>(temporaryList);
         }
+        /// <summary>
+        /// Takes the TableName that needs updatin and calls the Query that it will find its count
+        /// </summary>
+        /// <param name="tableName">A string with the TableName</param>
+        /// <returns>A bool if the query to find the table count is successful it returns true, otherwise it returns false </returns>
         public bool UpdateSpecificTableCount(string tableName)
         {
-            using (SQLiteConnection _conn = new SQLiteConnection(DBPath))
+            try
             {
-                for(int i=0; i < ListOfTables.Count; i++)
+                using (SQLiteConnection _conn = new SQLiteConnection(DBPath))
                 {
-                    if ( ListOfTables[i].Name == tableName)
+                    for (int i = 0; i < ListOfTables.Count; i++)
                     {
-                        ListOfTables[i].Count = _conn.ExecuteScalar<int>("SELECT COUNT(*) FROM " + tableName);
-                        return true;
+                        if (ListOfTables[i].Name == tableName)
+                        {
+                            ListOfTables[i].Count = _conn.ExecuteScalar<int>("SELECT COUNT(*) FROM " + tableName);
+                            return true;
+                        }
                     }
+                    return false;
                 }
+            }
+            catch(Exception ex)
+            {
+                App.Current.MainPage.DisplayAlert("Updating table Count Error", ex.ToString(), "OK");
                 return false;
             }
         }
@@ -132,13 +158,11 @@ namespace Databases_Viewer.Models
                 Debug.WriteLine(t.Count);
             }
         }
-        public List<Item> GetItemList()
-        {
-            var r = _database.Table<Item>().ToListAsync();
-            r.Wait();
-            return r.Result;
-        }
-        //parses the input String to see which operation and calls the appropriate method
+        /// <summary>
+        /// Uses CleanQuery() on and parses the input String to see which operation is being used and calls the appropriate WhenQuery method to deal with it.
+        /// For example: the first word is select and so it calls WhenQuerySelect
+        /// </summary>
+        /// <param name="query">An SQLDatabase Query</param>
         public bool QueryDatabase(string query)
         {
             if (string.IsNullOrWhiteSpace(query))
@@ -173,6 +197,13 @@ namespace Databases_Viewer.Models
                 return false;
             }
         }
+        /// <summary>
+        /// each WhenQuery function finds the tableName by looping through the splitQuery string. From said tableName it gets a corresponding type from the project
+        /// with its map to execute the query using _SQLConnection.Query(TableMapping , string). Check the functions for the specific differences
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="splitQuery"></param>
+        /// <returns>Returns true if it works and false if an exception is thrown</returns>
         public bool WhenQuerySelect(string query, string [] splitQuery)
         {
             int TableIndex;
@@ -185,10 +216,18 @@ namespace Databases_Viewer.Models
             {
                 var map = conn.GetMapping(TableType);
                 lastObservedList = new ObservableCollection<Object>(conn.Query(map, query));
+                //Assigns lastSelectQuery after doing the query, so that it is assigned after we are certain there were no exceptions
                 lastSelectQuery = query;
                 return true;
             }
         }
+        /// <summary>
+        /// The following three last WhenQuery after executing the query and displaying rows affected will call PopulateFromLastQuery() 
+        /// to display the lastQuery after changes have been made
+        /// </summary>
+        /// <param name="query">An SQL Database Query</param>
+        /// <param name="splitQuery">A cleaned and split array of SQL Database Query</param>
+        /// <returns>Returns true if it works and false if an exception is thrown</returns>
         public bool WhenQueryUpdate(string query, string[] splitQuery)
         {
             int modifiedRows;
@@ -238,6 +277,12 @@ namespace Databases_Viewer.Models
             App.Current.MainPage.DisplayAlert("Delete Successful", "Number of rows affected = " + modifiedRows, "OK");
             return true;
         }
+        /// <summary>
+        /// Will replace every non alphabeical Character with a space then all successive duplicate spaces are removed
+        /// </summary>
+        /// <param name="query">An SQL Database Query</param>
+        /// <returns>A String</returns>
+        /// <example>"select * from table" becomes "select from table"</example>
         private string CleanQuery(string query)
         {
             string treatedQuery = Regex.Replace(query, @"[^a-zA-Z]", " ");
@@ -248,6 +293,12 @@ namespace Databases_Viewer.Models
             treatedQuery = Regex.Replace(treatedQuery, @"\n{3,}", "\n\n"); // Replace 3+ \ns with two \ns
             return treatedQuery;
         }
+        /// <summary>
+        /// Will use QueryDatabase(lastquery) to display previous select statement. Or if none lastSelectStatement is null 
+        /// it will just get all the information from the table using the tableName 
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <returns>Returns true if it works and false if an exception is thrown</returns>
         private bool PopulateFromLastQuery(string tableName)
         {
             if (string.IsNullOrWhiteSpace(this.lastSelectQuery))
@@ -259,7 +310,9 @@ namespace Databases_Viewer.Models
         }
     }
 }
-
+/// <summary>
+///Observable Object used to keep track of Tables in Database
+/// </summary>
 public class TableName : ObservableObject
 {
     public TableName() { }

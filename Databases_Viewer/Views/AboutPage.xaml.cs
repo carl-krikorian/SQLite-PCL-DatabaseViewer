@@ -9,8 +9,7 @@ using SQLite;
 
 namespace Databases_Viewer.Views
 {
-    // Learn more about making custom code visible in the Xamarin.Forms previewer
-    // by visiting https://aka.ms/xamarinforms-previewer
+    // Is just a placeholder for the Shell
     [DesignTimeVisible(false)]
     public partial class AboutPage : ContentPage
     {
@@ -19,8 +18,5 @@ namespace Databases_Viewer.Views
             InitializeComponent();
         }
 
-        private void Button_Clicked(object sender, EventArgs e)
-        {
-        }
     }
 }

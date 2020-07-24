@@ -40,10 +40,8 @@ namespace Databases_Viewer.ViewModels
         public ICommand ExecuteInputCommand => new Command(() => DBExecuteInput());
         public void DBExecuteInput()
         {
-            //Debug.WriteLine("start of command");
             App.Database.QueryDatabase(EntryString); //"insert into Item(ID, Text) VALUES ('createdID3','TestText3')"
             ReturnNewLastObservedList();
-            //Debug.WriteLine("end of command");
         }
         public ObservableCollection<Object> ReturnNewLastObservedList()
         {

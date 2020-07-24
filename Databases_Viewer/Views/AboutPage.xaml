@@ -8,7 +8,7 @@
              xmlns:vm="clr-namespace:Databases_Viewer.ViewModels"
              xmlns:Syncfusion="clr-namespace:Syncfusion.SfDataGrid.XForms;assembly=Syncfusion.SfDataGrid.XForms"
              Title="{Binding Title}">
-    
+    <!-- Is just a placeholder page to populate page-->
     <ContentPage.BindingContext>
         <vm:AboutViewModel />
     </ContentPage.BindingContext>

@@ -17,7 +17,6 @@ namespace Databases_Viewer.ViewModels
     class DatabaseMasterDetailPageViewModel: INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        private ObservableCollection<TableName> TablesList = App.Database.ListOfTables;
         private ObservableCollection<TableName> displayedList = App.Database.ListOfTables;
         public ObservableCollection<TableName> DisplayedList
         {
@@ -69,18 +68,20 @@ namespace Databases_Viewer.ViewModels
             _selectedTable = null;
             SelectedTable = null;
         }
+        //for the search bar, it will filter the current Display List
         public ICommand PerformSearch => new Command<string>((string query) =>
         {
              DisplayedList = new ObservableCollection<TableName>( DisplayedList.Where(w => w.Name.ToLower().Contains(Query.ToLower())).ToList());
         });
+        //Will refresh Display List by assigning it to App.Database.ListOfTables
         public ICommand RefreshCommand => new Command(() => RefreshDisplayList());
+        //Will refresh the list or filter through it using Linq
         public ICommand TextChangeInSearchCommand => new Command(() => SearchInBlank());
         private void SearchInBlank()
         {
-
             if (string.IsNullOrWhiteSpace(Query))
             {
-                DisplayedList = TablesList;
+                DisplayedList = App.Database.ListOfTables;
             }
             else
             {

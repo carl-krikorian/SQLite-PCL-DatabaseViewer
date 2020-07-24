@@ -22,13 +22,7 @@ namespace Databases_Viewer.Views
             InitializeComponent();
           
         }
-        protected override void OnAppearing()
-        {
-            //TableListView.ItemsSource = null;
-            //databaseMasterDetailPageViewModel.DisplayedList = App.Database.ListOfTables;
-            //TableListView.ItemsSource = App.Database.ListOfTables;
-        }
-
+        //Is used to remove the orange highLight color when a Cell is tapped
         private void ViewCell_Tapped(object sender, EventArgs e)
         {
             if (givenCell != null)
@@ -40,7 +34,7 @@ namespace Databases_Viewer.Views
                 givenCell = viewCell;
             }
         }
-
+        // Assigns null to the Selected Item of the ListView so it can be selected again when back button is pressed
         private void TableListView_ItemTapped(object sender, ItemTappedEventArgs e)
         {
             ((ListView)sender).SelectedItem = null;

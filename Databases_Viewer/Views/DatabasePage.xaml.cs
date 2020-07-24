@@ -18,12 +18,12 @@ namespace Databases_Viewer.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class DatabasePage : ContentPage
     {
-        public DatabasePage()
-        { InitializeComponent(); }
         public DatabasePage(TableName tableName)
         {
+            //Will not load anything and display an alert if Table name does not have a corresponding Class in the project
             if (!FindClass(tableName.Name) || !App.Database.ListOfTables.Contains(tableName))
                 App.Current.MainPage.DisplayAlert("Database mismatch", "Lack of correspondance between database and classes", "Ok");
+            //Otherwise it loads components and assigns binding Context
             else
             {
                 InitializeComponent();
@@ -32,6 +32,11 @@ namespace Databases_Viewer.Views
                 BindingContext = databasePageViewModel;
             }
         }
+        /// <summary>
+        /// Checks the Model folder to see if it can find the TableName's corresponding class amongst the other Model Entities
+        /// </summary>
+        /// <param name="ClassName"></param>
+        /// <returns>true if it can properly call an instance of it or false otherwise</returns>
         public bool FindClass(string ClassName)
         {
             try
