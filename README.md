@@ -13,8 +13,8 @@ Should there otherwise be an error in your Query, a display message displaying t
 **Packages** <br />
 First and foremost, three Nuget packages are required for the program to work correctly <br />
 - MvvmLightLibs Version="5.4.1.1" or newer
-- sqlite-net-pcl Version="1.7.335" or newer
-- Syncfusion.Xamarin.SfDataGrid Version="18.2.0.46" or newer
+- sqlite-net-pcl Version="1.7.335" or newer 
+- Syncfusion.Xamarin.SfDataGrid Version="18.2.0.46" or newer <br />
 After installing these packages depending on the project follow the steps below <br />
 **Adding to a New Project**<br />
 
