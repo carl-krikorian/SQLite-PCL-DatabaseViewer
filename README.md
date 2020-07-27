@@ -26,7 +26,7 @@ Alert messages describing the number of rows affected will only be displayed if 
 - INSERT INTO TableName (Fields) VALUES (Field values)
 Should there otherwise be an error in your Query, a display message displaying the error or exception will appear.
 <br />
-<img src="Images/InsertExampl.png"  width= "150" height = "300">
+<img src="Images/InsertExample.png"  width= "150" height = "300">
 <br />
 # Installation
 **Packages** <br />
