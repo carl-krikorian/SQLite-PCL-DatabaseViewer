@@ -5,17 +5,20 @@ Once your Database Path has been found a list of existing Tables should appear w
 <img src="Images/ListOfTables.png" align = "center">
 <br />
 You can then click select on a given Table and all of its information should be displaed along with an editor and a submit button. <br/>
-<img src="Images/ExampleAnimalTable.png" align = "center">
+<img src="Images/ExampleAnimalTable.png" align = "center" width= "150" height = "300">
+<br />
 By entering an sqlQuery into the editor and submiting it using the submit button you can manipulate your SQLite Database. <br />
-<img src="Images/ExampleCatSearch.png" align = "center">
+<img src="Images/ExampleCatSearch.png" align = "center" width= "150" height = "300">
+<br />
 Note that all the SQLite Queries supported are that of SQLite-net-PCL. <br />
 Alert messages describing the number of rows affected will only be displayed if your query starts with UPDATE, INSERT and DELETE. For example:<br />
 - UPDATE TableName SET FieldName WHERE CONDITION 
 - DELETE FROM TableName SET FieldName = value WHERE CONDITION
 - INSERT INTO TableName (Fields) VALUES (Field values)
 Should there otherwise be an error in your Query, a display message displaying the error or exception will appear.
-<img src="Images/InsertExampl.png" align = "left">
-<img src="Images/ExampleDelete.png" align = "right">
+<br />
+<img src="Images/InsertExampl.png" align = "left" width= "150" height = "300">
+<img src="Images/ExampleDelete.png" align = "right" width= "150" height = "300">
 <br />
 # Installation
 **Packages** <br />
