@@ -18,13 +18,12 @@ By entering an sqlQuery into the editor and submiting it using the submit button
 <img src="Images/ExampleCatSearch.png">
 </p>
 <br />
-<br />
 Note that all the SQLite Queries supported are that of SQLite-net-PCL. <br />
 Alert messages describing the number of rows affected will only be displayed if your query starts with UPDATE, INSERT and DELETE. For example:<br />
-- UPDATE TableName SET FieldName WHERE CONDITION 
-- DELETE FROM TableName SET FieldName = value WHERE CONDITION
-- INSERT INTO TableName (Fields) VALUES (Field values)
-Should there otherwise be an error in your Query, a display message displaying the error or exception will appear.
+- UPDATE TableName SET FieldName WHERE CONDITION <br />
+- DELETE FROM TableName SET FieldName = value WHERE CONDITION <br />
+- INSERT INTO TableName (Fields) VALUES (Field values) <br />
+Should there otherwise be an error in your Query, a display message displaying the error or exception will appear. <br />
 # Installation
 **Packages** <br />
 First and foremost, three Nuget packages are required for the program to work correctly <br />
