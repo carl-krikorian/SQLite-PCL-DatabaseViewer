@@ -25,9 +25,6 @@ Alert messages describing the number of rows affected will only be displayed if 
 - DELETE FROM TableName SET FieldName = value WHERE CONDITION
 - INSERT INTO TableName (Fields) VALUES (Field values)
 Should there otherwise be an error in your Query, a display message displaying the error or exception will appear.
-<br />
-<img src="Images/InsertExample.png"  width= "150" height = "300">
-<br />
 # Installation
 **Packages** <br />
 First and foremost, three Nuget packages are required for the program to work correctly <br />
