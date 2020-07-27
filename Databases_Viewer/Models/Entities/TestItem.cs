@@ -1,4 +1,4 @@
-﻿using Databases_Viewer.Models.Repository.Interfaces;
+﻿using Databases_Viewer.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

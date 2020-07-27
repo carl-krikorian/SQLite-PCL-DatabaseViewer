@@ -5,7 +5,7 @@ using SQLite;
 using System.ComponentModel;
 using GalaSoft.MvvmLight;
 
-namespace Databases_Viewer.Models.Repository.Interfaces
+namespace Databases_Viewer.Models.Interfaces
 {
     public abstract class BaseEntity : ObservableObject
     {

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Databases_Viewer.Models.Repository.Interfaces;
+using Databases_Viewer.Models.Interfaces;
 using GalaSoft.MvvmLight;
 using SQLite;
 using Syncfusion.Data.Extensions;
@@ -90,7 +90,6 @@ namespace Databases_Viewer.Models
                 return false;
             }
         }
-        //Constructor that creates all Tables and then populates the List of tableName objects with their names and counts
         /// <summary>
         /// By querying the table SQLITE MASTER we can get all table names.
         /// </summary>
@@ -118,7 +117,7 @@ namespace Databases_Viewer.Models
             return new ObservableCollection<TableName>(temporaryList);
         }
         /// <summary>
-        /// Takes the TableName that needs updatin and calls the Query that it will find its count
+        /// Takes the TableName that needs updatin and calls a Query that it find its current count
         /// </summary>
         /// <param name="tableName">A string with the TableName</param>
         /// <returns>A bool if the query to find the table count is successful it returns true, otherwise it returns false </returns>
