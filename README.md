@@ -1,12 +1,12 @@
 # SQLite-PCL-DatabaseViewer
 **This is an SQLiteViewer for Xamarin** <br />
 Should you want to try your own SQLite database in your phone instead of creating one, you can change the path in the SDatabase constructor by renaming dbPath in the App.xaml.cs file.<br />
-Once your Database Path has been found a list of existing Tables should appear with their row counts. You can then click select on a given Table and all of its information should be displaed along with an editor and a submit button. <br/>
-<br />
-<div style="text-align:center">
+Once your Database Path has been found a list of existing Tables should appear with their row counts. <br />
+<p align="center">
 <img src="Images/ListOfTables.png" align = "center" width = "302" height = "491">
-</div>
+</p>
 <br />
+You can then click select on a given Table and all of its information should be displaed along with an editor and a submit button. <br/>
 By entering an sqlQuery into the editor and submiting it using the submit button you can manipulate your SQLite Database. <br />
 Note that all the SQLite Queries supported are that of SQLite-net-PCL. <br />
 Alert messages describing the number of rows affected will only be displayed if your query starts with UPDATE, INSERT and DELETE. For example:<br />
