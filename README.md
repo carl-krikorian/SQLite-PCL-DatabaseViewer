@@ -4,7 +4,7 @@ Should you want to try your own SQLite database in your phone instead of creatin
 Once your Database Path has been found a list of existing Tables should appear with their row counts. You can then click select on a given Table and all of its information should be displaed along with an editor and a submit button. <br/>
 <br />
 <div style="text-align:center">
-<img src="Images/ListOfTables.png" width = "100" height = "200">
+<img src="Images/ListOfTables.png" width = "151" height = "245.5">
 </div>
 <br />
 By entering an sqlQuery into the editor and submiting it using the submit button you can manipulate your SQLite Database. <br />
