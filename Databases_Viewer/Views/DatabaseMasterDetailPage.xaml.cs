@@ -11,7 +11,7 @@ namespace Databases_Viewer.Views
         public DatabaseMasterDetailPage()
         {
             InitializeComponent();
-          
+            Title = "Tables";
         }
         //Is used to remove the orange highLight color when a Cell is tapped
         private void ViewCell_Tapped(object sender, EventArgs e)
