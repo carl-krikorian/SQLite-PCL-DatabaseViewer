@@ -4,7 +4,7 @@ using System.Text;
 using Databases_Viewer.Models.Repository.Interfaces;
 using SQLite;
 
-namespace Databases_Viewer.Models
+namespace Databases_Viewer.Models.Entities
 {
     public class Animal: BaseEntity
     {

@@ -3,19 +3,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Dynamic;
-using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Databases_Viewer.Models.Repository;
 using Databases_Viewer.Models.Repository.Interfaces;
 using GalaSoft.MvvmLight;
 using SQLite;
 using Syncfusion.Data.Extensions;
-using Xamarin.Forms;
 
 namespace Databases_Viewer.Models
 {

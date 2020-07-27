@@ -1,11 +1,5 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
-using System.Dynamic;
-using System.Collections.Generic;
-using System.Diagnostics;
-using SQLite;
 
 namespace Databases_Viewer.Views
 {

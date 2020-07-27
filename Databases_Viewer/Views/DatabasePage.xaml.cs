@@ -1,19 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Databases_Viewer.Models;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Databases_Viewer.ViewModels;
-using System.Collections.ObjectModel;
-using Microsoft.CSharp.RuntimeBinder;
-using System.Windows.Input;
-using Databases_Viewer.Models.Repository.Interfaces;
-using System.Text.RegularExpressions;
+
 
 namespace Databases_Viewer.Views
 {

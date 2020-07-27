@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace Databases_Viewer.Models
+namespace Databases_Viewer.Models.Entities
 {
     public class TestItem : BaseEntity
     {
