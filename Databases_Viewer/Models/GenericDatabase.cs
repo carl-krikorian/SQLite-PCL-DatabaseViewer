@@ -211,7 +211,8 @@ namespace Databases_Viewer.Models
                 if (splitQuery[TableIndex] == "from")
                     break;
             string tableName = splitQuery[TableIndex + 1];
-            Type TableType = Type.GetType("Databases_Viewer.Models." + tableName);
+            //Type TableType = Type.GetType("Databases_Viewer.Models." + tableName);
+            Type TableType = GetTypeFromAllAssemblies(tableName);
             using (SQLiteConnection conn = new SQLiteConnection(DBPath))
             {
                 var map = conn.GetMapping(TableType);
@@ -307,6 +308,31 @@ namespace Databases_Viewer.Models
             }
             else
                 return QueryDatabase(lastSelectQuery);
+        }
+        /// <summary>
+        /// Checks All the assemblies for those with base entity and finds the objects types with their namespace
+        /// It then removes assembly references from the fullnames and compares to the tableName to assign the type to it
+        /// </summary>
+        /// <param name="ClassName"></param>
+        /// <returns>the type with the same name as the class name inputed</returns>
+        public Type GetTypeFromAllAssemblies(string ClassName)
+        {
+            Type temp = null;
+            var type = typeof(BaseEntity);
+            var types = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => type.IsAssignableFrom(p));
+            var entities = types.Where(t => t.FullName.Contains(ClassName)).ToList();
+            //loops through all the types in the entities list
+            for (int Ientities = 0; Ientities < entities.Count; Ientities++)
+            {
+                string removedAssembliesName = Regex.Replace(entities[Ientities].FullName, @"[.\w]+\.(\w+)", "$1");
+                if (removedAssembliesName == ClassName)
+                {
+                    temp = entities[Ientities];
+                }   
+            }
+            return temp;
         }
     }
 }

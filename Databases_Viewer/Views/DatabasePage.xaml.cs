@@ -12,6 +12,8 @@ using Databases_Viewer.ViewModels;
 using System.Collections.ObjectModel;
 using Microsoft.CSharp.RuntimeBinder;
 using System.Windows.Input;
+using Databases_Viewer.Models.Repository.Interfaces;
+using System.Text.RegularExpressions;
 
 namespace Databases_Viewer.Views
 {
@@ -33,7 +35,8 @@ namespace Databases_Viewer.Views
             }
         }
         /// <summary>
-        /// Checks the Model folder to see if it can find the TableName's corresponding class amongst the other Model Entities
+        /// Checks All the assemblies for those with base entity and finds the objects types with their namespace
+        /// It then removes assembly references and compares to the tableName with the string without assembly references and returns false at the end if not found
         /// </summary>
         /// <param name="ClassName"></param>
         /// <returns>true if it can properly call an instance of it or false otherwise</returns>
@@ -41,9 +44,9 @@ namespace Databases_Viewer.Views
         {
             try
             {
-                Item i = new Item();
-                Type t = Type.GetType("Databases_Viewer.Models." + ClassName);
-                if (t == null)
+                Type temp = App.Database.GetTypeFromAllAssemblies(ClassName);
+                //Type t = Type.GetType("Databases_Viewer.Models." + ClassName);
+                if (temp == null)
                     return false;
                 return true;
             }
