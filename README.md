@@ -6,6 +6,7 @@ Once your Database Path has been found a list of existing Tables should appear w
 <img src="Images/ListOfTables.png">
 </p>
 <br />
+<br />
 You can then click select on a given Table and all of its information should be displaed along with an editor and a submit button. <br/>
 <p align="center">
 <img src="Images/ExampleAnimalTable.png">
