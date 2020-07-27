@@ -3,7 +3,7 @@
 Should you want to try your own SQLite database in your phone instead of creating one, you can change the path in the SDatabase constructor by renaming dbPath in the App.xaml.cs file.<br />
 Once your Database Path has been found a list of existing Tables should appear with their row counts. <br />
 <p align="center">
-<img src="Images/ListOfTables.png" align = "center" width = "302" height = "491">
+<img src="Images/ListOfTables.png" align = "center">
 </p>
 <br />
 You can then click select on a given Table and all of its information should be displaed along with an editor and a submit button. <br/>
