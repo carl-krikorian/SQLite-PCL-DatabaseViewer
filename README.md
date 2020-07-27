@@ -11,10 +11,12 @@ You can then click select on a given Table and all of its information should be 
 <img src="Images/ExampleAnimalTable.png">
 </p>
 <br />
+<br />
 By entering an sqlQuery into the editor and submiting it using the submit button you can manipulate your SQLite Database. <br />
 <p align="center">
 <img src="Images/ExampleCatSearch.png">
 </p>
+<br />
 <br />
 Note that all the SQLite Queries supported are that of SQLite-net-PCL. <br />
 Alert messages describing the number of rows affected will only be displayed if your query starts with UPDATE, INSERT and DELETE. For example:<br />
@@ -24,7 +26,6 @@ Alert messages describing the number of rows affected will only be displayed if 
 Should there otherwise be an error in your Query, a display message displaying the error or exception will appear.
 <br />
 <img src="Images/InsertExampl.png"  width= "150" height = "300">
-<img src="Images/ExampleDelete.png"  width= "150" height = "300">
 <br />
 # Installation
 **Packages** <br />
