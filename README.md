@@ -88,6 +88,9 @@ Here are some random values I added <br />
 5. Add the following code to the App.xaml.cs and all should work 
  public static GenericDatabase database;
         
+        
+        public static GenericDatabase database;
+        
         public static GenericDatabase Database
         {
             get
