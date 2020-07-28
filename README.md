@@ -40,7 +40,7 @@ First and foremost, three Nuget packages are required for the program to work co
 Should you choose to add the viewer to another project, you can download this project, rename the Namespaces to correspond with your App's name and add the necessary files.<br /> 
 You can copy paste the directories or if these directories already exist you can just copy the files onto that directory. <br />
 <br />
-**Note that the Entities folder inside of Models should contain all the Table objects you want initialized. When The GenericDatabase Object is created, the contructor automatically creates a Table for each Object in said Entities folder. Animal, Item and TestItem are just examples you can use to test the functionality of the application and can be omitted.** <br />
+**Note that the Entities folder inside of Models should contain all the Table objects you want initialized. When The GenericDatabase Object is created, the contructor automatically creates a Table for each Object that extends the BaseEntity folder. Animal, Item and TestItem are just examples you can use to test the functionality of the application and can be omitted.** <br />
 <br />
 After installing these packages depending on the project follow the steps below <br />
 **Adding to a New Project**<br />
@@ -64,3 +64,43 @@ Finally, inside of your App.xaml.cs add the following code and replace the datab
                 return database;
             }
         }
+        
+**Adding to an Old Project**<br />
+Adding to an old project can be tricky depending on if the existing Database objects already implement the BaseEntity Interface. Should they not you can either modify the BaseEntity interface or the Database Object itself. (in this example I chose to change the BaseEntity file)<br /> 
+Let us try to add the project to the notes Database here: https://docs.microsoft.com/en-us/samples/xamarin/xamarin-forms-samples/getstarted-notes-styled/. <br />
+Here are some random values I added <br />
+<p align="center">
+  <img src="Images/NotesBegin.png" width = "298" height = "203">
+</p>
+1. Download and install the nuget Packages on the Notes Solution. <br />
+2. Rename the namespaces
+<p align="center">
+  <img src="Images/ReplaceAll.png">
+</p>
+3. These essential folders need to be added
+<p align="center">
+  <img src="Images/FilesToAdd.png" width = "288" height = "535">
+</p>
+4. Extend the Note object to BaseEntity
+<p align="center">
+  <img src="Images/AddBaseEntity.png" width = "400" height = "321">
+</p>
+5. Add the following code to the App.xaml.cs and all should work 
+ public static GenericDatabase database;
+        
+        public static GenericDatabase Database
+        {
+            get
+            {
+                if (database == null)
+                {
+                    database = new GenericDatabase(Path);
+                }
+                return database;
+            }
+        }
+ 6. The table should then appear in the list of tables. Upon clicking you should get something like this:
+ <p align="center">
+  <img src="Images/FinalDBView.png">
+</p>
+ 
