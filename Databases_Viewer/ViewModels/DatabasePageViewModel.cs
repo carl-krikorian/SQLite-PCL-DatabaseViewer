@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Xamarin.Forms;
@@ -17,10 +18,12 @@ namespace Databases_Viewer.ViewModels
         public DatabasePageViewModel(TableName tableName)     
         {
             currentTable = tableName;
+            //TableTitle = currentTable.Name;
             App.Database.QueryDatabase("select * from " + currentTable.Name);
             DisplayList = App.Database.lastObservedList;
         }
         private TableName currentTable;
+        public string TableTitle => currentTable.Name;
         private ObservableCollection<Object> displayList;
         public ObservableCollection<Object> DisplayList
         {

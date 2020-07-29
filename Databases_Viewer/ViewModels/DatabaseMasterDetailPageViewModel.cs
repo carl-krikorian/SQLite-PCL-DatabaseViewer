@@ -1,7 +1,9 @@
 ﻿using Databases_Viewer.Views;
 using Syncfusion.Data.Extensions;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
@@ -71,7 +73,36 @@ namespace Databases_Viewer.ViewModels
         }
         public async void SelectedTablePush(TableName tableName)
         {
-            await App.Current.MainPage.Navigation.PushAsync(new DatabasePage(tableName));
+            //Will not load anything and display an alert if Table name does not have a corresponding Class in the project
+            if (!FindClass(tableName.Name) || !App.Database.ListOfTables.Contains(tableName))
+                await App.Current.MainPage.DisplayAlert("Database mismatch", "Lack of correspondance between database and classes", "Ok");
+            //Otherwise it loads components and assigns binding Context
+            else
+            {
+                await App.Current.MainPage.Navigation.PushAsync(new DatabasePage(tableName));
+            }
+        }
+        /// <summary>
+        /// Checks All the assemblies for those with base entity and finds the objects types with their namespace
+        /// It then removes assembly references and compares to the tableName with the string without assembly references and returns false at the end if not found
+        /// </summary>
+        /// <param name="ClassName"></param>
+        /// <returns>true if it can properly call an instance of it or false otherwise</returns>
+        public bool FindClass(string ClassName)
+        {
+            try
+            {
+                Type temp = App.Database.GetTypeFromAllAssemblies(ClassName);
+                //Type t = Type.GetType("Databases_Viewer.Models." + ClassName);
+                if (temp == null)
+                    return false;
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.ToString());
+                return false;
+            }
         }
     }
 }

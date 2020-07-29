@@ -6,7 +6,8 @@
              mc:Ignorable="d"
              xmlns:Syncfusion="clr-namespace:Syncfusion.SfDataGrid.XForms;assembly=Syncfusion.SfDataGrid.XForms"
              x:Class="Databases_Viewer.Views.DatabasePage"
-             xmlns:local ="clr-namespace:Databases_Viewer.Ressources">
+             xmlns:local ="clr-namespace:Databases_Viewer.Ressources"
+             Title="{Binding TableTitle}">
     <ContentPage.Resources>
         <ResourceDictionary>
             <local:GridTheme x:Key="CustomTheme" />
