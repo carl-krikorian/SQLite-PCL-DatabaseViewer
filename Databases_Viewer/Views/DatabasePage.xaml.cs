@@ -3,7 +3,7 @@ using System.Diagnostics;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Databases_Viewer.ViewModels;
-
+using System.Runtime.CompilerServices;
 
 namespace Databases_Viewer.Views
 {
@@ -45,6 +45,10 @@ namespace Databases_Viewer.Views
                 Debug.WriteLine(e.ToString());
                 return false;
             }
+        }
+        protected override void OnAppearing()
+        {
+
         }
     }
 }

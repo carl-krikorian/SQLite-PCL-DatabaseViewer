@@ -11,6 +11,10 @@ namespace Databases_Viewer.ViewModels
 {
     class DatabaseMasterDetailPageViewModel: INotifyPropertyChanged
     {
+        public DatabaseMasterDetailPageViewModel()
+        {
+            SelectedTablePushCommand = new Command<TableName>(SelectedTablePush);
+        }
         public event PropertyChangedEventHandler PropertyChanged;
         private ObservableCollection<TableName> displayedList = App.Database.ListOfTables;
         public ObservableCollection<TableName> DisplayedList
@@ -38,31 +42,6 @@ namespace Databases_Viewer.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         public string Query { get; set; }
-        private TableName _selectedTable { get; set; }
-        public TableName SelectedTable
-        {
-            get
-            { return _selectedTable; }
-            set
-            {
-                if (_selectedTable != value)
-                {
-                    _selectedTable = value;
-                    //NotifyPropertyChanged(nameof(SelectedTable));
-                    if (_selectedTable != null)
-                        TableListView_ItemSelected(SelectedTable);
-                }
-            }
-        }
-        public async void TableListView_ItemSelected(TableName tableName)
-        {
-            //TableName t = new TableName();
-           // t.name = "jeff";
-            //Debug.WriteLine("Table name is " + tableName.name);
-            await App.Current.MainPage.Navigation.PushAsync(new DatabasePage(tableName));
-            _selectedTable = null;
-            SelectedTable = null;
-        }
         //for the search bar, it will filter the current Display List
         public ICommand PerformSearch => new Command<string>((string query) =>
         {
@@ -72,6 +51,7 @@ namespace Databases_Viewer.ViewModels
         public ICommand RefreshCommand => new Command(() => RefreshDisplayList());
         //Will refresh the list or filter through it using Linq
         public ICommand TextChangeInSearchCommand => new Command(() => SearchInBlank());
+        public Command<TableName> SelectedTablePushCommand { get; }
         private void SearchInBlank()
         {
             if (string.IsNullOrWhiteSpace(Query))
@@ -88,6 +68,10 @@ namespace Databases_Viewer.ViewModels
             isBusy = true;
             DisplayedList = new ObservableCollection<TableName>(App.Database.ListOfTables);
             isBusy = false;
+        }
+        public async void SelectedTablePush(TableName tableName)
+        {
+            await App.Current.MainPage.Navigation.PushAsync(new DatabasePage(tableName));
         }
     }
 }

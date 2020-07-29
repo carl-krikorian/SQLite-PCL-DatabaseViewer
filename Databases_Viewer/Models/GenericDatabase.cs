@@ -324,6 +324,7 @@ namespace Databases_Viewer.Models
                 if (removedAssembliesName == ClassName)
                 {
                     temp = entities[Ientities];
+                    return temp;
                 }   
             }
             return temp;

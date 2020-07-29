@@ -5,7 +5,9 @@
             mc:Ignorable="d"
             x:Class="Databases_Viewer.Views.DatabaseMasterDetailPage"
             xmlns:local="clr-namespace:Databases_Viewer.ViewModels"
-            xmlns:behaviors="clr-namespace:Databases_Viewer.Behaviors">
+            x:Name="TableListPage"
+            xmlns:behaviors="clr-namespace:Databases_Viewer.Behaviors"
+             Title="Tables">
     <ContentPage.BindingContext>
         <local:DatabaseMasterDetailPageViewModel/>
     </ContentPage.BindingContext>
@@ -27,14 +29,12 @@
                           HasUnevenRows="True"
                           SeparatorVisibility="None"
                           ItemsSource="{Binding DisplayedList}"  
-                          SelectedItem="{Binding SelectedTable}"
                           IsPullToRefreshEnabled="True"
-                          ItemTapped="TableListView_ItemTapped"
                           RefreshCommand="{Binding RefreshCommand}"
                           IsRefreshing="{Binding isBusy}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                            <ViewCell x:Name="givenCell"  Tapped ="ViewCell_Tapped">
+                            <ViewCell>
                                 <Grid Padding="15,0,15,0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="*" />
@@ -46,6 +46,9 @@
                                     </Grid.ColumnDefinitions>
                                     <Label x:Name="TextLabel" Grid.Row="0" Grid.Column="0" Text="{Binding Name}" TranslationY="2" TextColor="#2196f3" />
                                     <Label x:Name="DetailLabel" Grid.Row="1" Grid.Column="0" Text="{Binding Count, StringFormat='Number of Records = {0} rows'}" FontSize="Small"  TextColor="Black" TranslationY="-5"  />
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={x:Reference TableListPage}, Path= BindingContext.SelectedTablePushCommand}" CommandParameter="{Binding .}"/>
+                                    </Grid.GestureRecognizers>
                                 </Grid>
                             </ViewCell>
                         </DataTemplate>
